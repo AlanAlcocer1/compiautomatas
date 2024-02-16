@@ -141,7 +141,7 @@ public class interfaz extends javax.swing.JFrame {
                 }
                 lexema = "";
             }
-        }
+        } //COMENTARIO
     }
 
     /**
