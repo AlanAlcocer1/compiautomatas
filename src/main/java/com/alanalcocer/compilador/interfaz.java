@@ -95,25 +95,25 @@ public class interfaz extends javax.swing.JFrame {
                 LOB.add(lexem);}
             }
         
-        if (lexem.matches("^[A-ZA-Z0-9]{2}[0-9a-z]{4}$")) { //expresion regular para numeros enteros
+        if (lexem.matches("^[0-9]+$")) { //expresion regular para numeros enteros
             for (int fila = 0; fila < palabras.size(); fila++) {
                 if (tipoDato.equals(palabras.get(fila)) || lexem.equals(palabras.get(fila))) {
-                    tablaDatos.setValueAt("", fila, 1);
+                    tablaDatos.setValueAt("TIN", fila, 1);
                 }
             }
         }
-        if (lexem.matches("^[A-ZA-Z0-9]{2}[0-9a-z]{4}$")) { //expresion regular para numeros reales
+        if (lexem.matches("^[0-9]+.[0-9]+$")) { //expresion regular para numeros reales
             for (int fila = 0; fila < palabras.size(); fila++) {
-                //CHECAR PARA QUITAR EL TIN, FOAT Y LOB
+                
                 if (tipoDato.equals(palabras.get(fila)) || lexem.equals(palabras.get(fila))) {
-                    tablaDatos.setValueAt("", fila, 1);
+                    tablaDatos.setValueAt("FOAT", fila, 1);
                 }
             }
         }
-        if (lexem.matches("^[A-Z0-9]{2}[0-9a-z]{4}$")) { //expresion regular para cadena
+        if (lexem.matches("^\\\"[^\\\"]*\\\"$")) { //expresion regular para cadena
             for (int fila = 0; fila < palabras.size(); fila++) {
                 if (tipoDato.equals(palabras.get(fila)) || lexem.equals(palabras.get(fila))) {
-                    tablaDatos.setValueAt("", fila, 1);
+                    tablaDatos.setValueAt("LOB", fila, 1);
                     
                 }
             }
@@ -160,6 +160,7 @@ public class interfaz extends javax.swing.JFrame {
         tablaDatos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -273,26 +274,32 @@ public class interfaz extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("BUG POR CORREGIR: EL PENULTIMO ESPACIO DEBE BORRARSE PORQUE SI NO LO DETECTA, PREGUNTARLE A LA MAESTRA ITALIA.");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(63, 63, 63)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton2)
                             .addComponent(jButton1))))
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addGap(63, 63, 63)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,12 +309,17 @@ public class interfaz extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addGap(69, 69, 69))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(28, 28, 28)
+                        .addComponent(jButton2)
+                        .addGap(69, 69, 69))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50))))
         );
 
         pack();
@@ -332,7 +344,10 @@ public class interfaz extends javax.swing.JFrame {
                           DN2401 = AAbaba - MP2040 ; 
                           MR1999 = MApapa - PAmama ; 
                           20as12 = AAbaba / DN2401 
-                          aa20AS ; """);
+                          VM2904 = 20 ; 
+                          PAmama = 20.0 ; 
+                          AAbaba = "Italia" ; 
+                          """);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -375,6 +390,7 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tablaDatos;
