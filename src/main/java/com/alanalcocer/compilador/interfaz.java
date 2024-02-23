@@ -143,6 +143,120 @@ public class interfaz extends javax.swing.JFrame {
             }
         } //COMENTARIO
     }
+    // PARA IDENTIFICAR ERRORES
+    public void identificarErrores(String lexemasCod) {
+        String lexemaAsignacion = "", token = "14ERSem", tipoError = "", tipoDato = "", tipoAsignacion = "";
+        int contadorERSem = 0, contadorLinea = 1, filaErrores = 0, fila = 0;
+        char caracter;
+        boolean asignacion = false;
+
+        for (int i = 0; i < jTableError.getRowCount(); i++) {
+            jTableError.setValueAt("", i, 0);//Token
+            jTableError.setValueAt("", i, 1);//lexema
+            jTableError.setValueAt("", i, 2);//linea
+            jTableError.setValueAt("", i, 3);//descripcion
+        }
+
+        for (int i = 0; i < lexemasCod.length(); i++) {
+            caracter = lexemasCod.charAt(i);
+            if (caracter != ' ' && caracter != '\n') {
+                lexemaAsignacion = lexemaAsignacion + caracter;
+            } else if (caracter == '\n') {
+                contadorLinea++;
+                lexemaAsignacion = "";
+            } else if (palabras.contains(lexemaAsignacion)) {
+                fila = palabras.indexOf(lexemaAsignacion);
+                tipoDato = (String) tablaDatos.getValueAt(fila, 1);
+                // la fila indicada
+
+                if (lexemaAsignacion.matches("^[A-Z0-9]{2}[0-9a-z]{4}$") && asignacion == false) {
+                    tipoAsignacion = tipoDato;
+                }
+                if (!lexemaAsignacion.equals("TIN")
+                        && !lexemaAsignacion.equals("FOAT")
+                        && !lexemaAsignacion.equals("LOB")
+                        && !lexemaAsignacion.matches("<=")
+                        && !lexemaAsignacion.matches(">=")
+                        && !lexemaAsignacion.matches(">")
+                        && !lexemaAsignacion.matches("<")
+                        && !lexemaAsignacion.matches("==")
+                        && !lexemaAsignacion.matches("!=")
+                        && !lexemaAsignacion.matches("!")
+                        && !lexemaAsignacion.matches("!:")
+                        && !lexemaAsignacion.matches("::")
+                        && !lexemaAsignacion.matches("<:")
+                        && !lexemaAsignacion.matches(">:")
+                        && !lexemaAsignacion.matches("\\|\\|")
+                        && !lexemaAsignacion.matches("&&")
+                        && !lexemaAsignacion.matches("&")
+                        && !lexemaAsignacion.matches("^[(|)|{|}|,|;]$")
+                        && !lexemaAsignacion.matches("^[-|+|*|/|%|=]$")) {
+                    //identificador no declarado
+                    String identificador = (String) tablaDatos.getValueAt(palabras.indexOf(lexemaAsignacion), 1);
+                    if (identificador == null) {
+                        contadorERSem++;
+                        tipoError = "Variable no declarada";
+                        llenarTablaErrores(lexemaAsignacion, token, tipoError, contadorERSem, filaErrores,
+                                contadorLinea);
+                        filaErrores++;
+                    } else if (asignacion && tipoAsignacion != null) {
+                        //reglas de TIN
+                        if (tipoAsignacion.equals("TIN") && !tipoDato.equals("TIN")) {
+                            contadorERSem++;
+                            tipoError = "Incompatibilidad de tipos TIN";
+                            llenarTablaErrores(lexemaAsignacion, token, tipoError, contadorERSem, filaErrores,
+                                    contadorLinea);
+                            filaErrores++;
+                        } //reglas de FOAT
+                        
+                        else if (tipoAsignacion.equals("FOAT")
+                                && !(tipoDato.equals("FOAT") || tipoDato.equals("FOAT"))) {
+                            contadorERSem++;
+                            tipoError = "Incompatibilidad de tipos FOAT";
+                            llenarTablaErrores(lexemaAsignacion, token, tipoError, contadorERSem, filaErrores,
+                                    contadorLinea);
+                            filaErrores++;
+                            
+                        } //reglas de DCad
+                        else if (tipoAsignacion.equals("LOB") && !(tipoDato.equals("LOB"))) {
+                            contadorERSem++;
+                            tipoError = "Incompatibilidad de tipos LOB";
+                            llenarTablaErrores(lexemaAsignacion, token, tipoError, contadorERSem, filaErrores,
+                                    contadorLinea);
+                            filaErrores++;
+                        }
+                        asignacion = false;
+                    }
+                }
+                // detectada asignacion para la comparacion de tipos
+                if (lexemaAsignacion.equals("=")) {
+                    asignacion = true;
+                }
+                if (lexemaAsignacion.equals("+")) {
+                    asignacion = true;
+                }
+                if (lexemaAsignacion.equals("-")) {
+                    asignacion = true;
+                }
+                if (lexemaAsignacion.equals("*")) {
+                    asignacion = true;
+                }
+                if (lexemaAsignacion.equals("/")) {
+                    asignacion = true;
+                }
+                lexemaAsignacion = "";
+            }
+        }
+    }
+
+    public void llenarTablaErrores(String lexem, String error, String tipoError, int contadorErrores,
+            int contadorFilaTablaErrores, int contadorLinea) {
+        jTableError.setValueAt(error + contadorErrores, contadorFilaTablaErrores, 0);//token
+        jTableError.setValueAt(lexem, contadorFilaTablaErrores, 1);//lexema
+        jTableError.setValueAt(contadorLinea, contadorFilaTablaErrores, 2);//linea
+        jTableError.setValueAt(tipoError, contadorFilaTablaErrores, 3);//descripcion
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -160,6 +274,8 @@ public class interfaz extends javax.swing.JFrame {
         tablaDatos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTableError = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -274,16 +390,36 @@ public class interfaz extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("BUG POR CORREGIR: EL PENULTIMO ESPACIO DEBE BORRARSE PORQUE SI NO LO DETECTA, PREGUNTARLE A LA MAESTRA ITALIA.");
+        jTableError.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Token error", "Lexema", "Renglon", "Descripcion"
+            }
+        ));
+        jScrollPane3.setViewportView(jTableError);
+
+        jLabel2.setText("COMPILADOR EQUIPO14 7SB");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -293,33 +429,41 @@ public class interfaz extends javax.swing.JFrame {
                         .addGap(14, 14, 14)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton2)
-                            .addComponent(jButton1))))
-                .addGap(63, 63, 63)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(175, 175, 175))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 799, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(8, 8, 8)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(28, 28, 28)
-                        .addComponent(jButton2)
-                        .addGap(69, 69, 69))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(50, 50, 50))))
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(91, 91, 91))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
         );
 
         pack();
@@ -332,6 +476,7 @@ public class interfaz extends javax.swing.JFrame {
     columnaLexema();
     identificarLexema(lexemasCod);
     columnaTipo();
+    identificarErrores(lexemasCod);
     System.out.println(lexemasCod);// TODO add your handling code here:
     //agregarPalabrasATabla();
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -343,7 +488,7 @@ public class interfaz extends javax.swing.JFrame {
                           LOB AAbaba , MP2040 , MR1999 ; 
                           DN2401 = AAbaba - MP2040 ; 
                           MR1999 = MApapa - PAmama ; 
-                          20as12 = AAbaba / DN2401 
+                          20as12 = AAbaba / DN2401 ;
                           VM2904 = 20 ; 
                           PAmama = 20.0 ; 
                           AAbaba = "Italia" ; 
@@ -393,6 +538,8 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTableError;
     private javax.swing.JTable tablaDatos;
     // End of variables declaration//GEN-END:variables
 }
