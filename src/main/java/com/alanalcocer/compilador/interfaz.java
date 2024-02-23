@@ -210,7 +210,7 @@ public class interfaz extends javax.swing.JFrame {
                         } //reglas de FOAT
                         
                         else if (tipoAsignacion.equals("FOAT")
-                                && !(tipoDato.equals("FOAT") || tipoDato.equals("FOAT"))) {
+                                && !(tipoDato.equals("FOAT") || tipoDato.equals("TIN"))) {
                             contadorERSem++;
                             tipoError = "Incompatibilidad de tipos FOAT";
                             llenarTablaErrores(lexemaAsignacion, token, tipoError, contadorERSem, filaErrores,
@@ -491,7 +491,9 @@ public class interfaz extends javax.swing.JFrame {
                           20as12 = AAbaba / DN2401 ;
                           VM2904 = 20 ; 
                           PAmama = 20.0 ; 
-                          AAbaba = "Italia" ; 
+                          AAbaba = "Italia" ;
+                          PAmama = MApapa + DN2401 ;
+                          PAmama = DN2401 + MApapa ;
                           """);
     }//GEN-LAST:event_jButton2ActionPerformed
 
